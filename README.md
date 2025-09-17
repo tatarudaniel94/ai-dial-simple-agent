@@ -17,8 +17,8 @@ task/
 ├── tools/                
 │   ├── base.py            ✅ Abstract base tool interface
 │   ├── web_search.py               🚧 TODO: implement all points described in TODO seactions
-│   └── user/                       🚧 TODO: implement all points described in TODO seactions
-│       ├── base.py                 🚧 TODO: implement all points described in TODO seactions
+│   └── user/                       
+│       ├── base.py                 ✅ Abstraction for user service related tools
 │       ├── create_user_tool.py     🚧 TODO: implement all points described in TODO seactions
 │       ├── update_user_tool.py     🚧 TODO: implement all points described in TODO seactions
 │       ├── delete_user_tool.py     🚧 TODO: implement all points described in TODO seactions
