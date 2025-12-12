@@ -17,20 +17,55 @@ DIAL_ENDPOINT = "https://ai-proxy.lab.epam.com"
 API_KEY = os.getenv('DIAL_API_KEY')
 
 def main():
-    #TODO:
     # 1. Create UserClient
-    # 2. Create DialClient with all tools (WebSearchTool, GetUserByIdTool, SearchUsersTool, CreateUserTool, UpdateUserTool, DeleteUserTool)
-    # 3. Create Conversation and add there first System message with SYSTEM_PROMPT (you need to write it in task.prompts#SYSTEM_PROMPT)
-    # 4. Run infinite loop and in loop and:
-    #    - get user input from terminal (`input("> ").strip()`)
-    #    - Add User message to Conversation
-    #    - Call DialClient with conversation history
-    #    - Add Assistant message to Conversation and print its content
-    raise NotImplementedError()
+    user_client = UserClient()
+    
+    # 2. Create DialClient with all tools
+    tools = [
+        WebSearchTool(api_key=API_KEY, endpoint=DIAL_ENDPOINT),
+        GetUserByIdTool(user_client=user_client),
+        SearchUsersTool(user_client=user_client),
+        CreateUserTool(user_client=user_client),
+        UpdateUserTool(user_client=user_client),
+        DeleteUserTool(user_client=user_client),
+    ]
+    
+    dial_client = DialClient(
+        endpoint=DIAL_ENDPOINT,
+        deployment_name="gpt-4o",
+        api_key=API_KEY,
+        tools=tools
+    )
+    
+    # 3. Create Conversation and add System message
+    conversation = Conversation()
+    conversation.add_message(Message(role=Role.SYSTEM, content=SYSTEM_PROMPT))
+    
+    print("\n🤖 User Management Agent ready. Type your request (Ctrl+C to exit):\n")
+    
+    # 4. Run infinite loop
+    while True:
+        try:
+            user_input = input("> ").strip()
+            if not user_input:
+                continue
+            
+            # Add User message to Conversation
+            conversation.add_message(Message(role=Role.USER, content=user_input))
+            
+            # Call DialClient with conversation history
+            ai_response = dial_client.get_completion(conversation.get_messages())
+            
+            # Add Assistant message to Conversation and print its content
+            conversation.add_message(ai_response)
+            print(f"\n🤖 Assistant: {ai_response.content}\n")
+            
+        except KeyboardInterrupt:
+            print("\n\nGoodbye!")
+            break
 
 
 main()
 
-#TODO:
 # Request sample:
 # Add Andrej Karpathy as a new user
